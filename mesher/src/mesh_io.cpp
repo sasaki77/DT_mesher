@@ -1,7 +1,7 @@
 #include "common.h"
 #define BUFF_SIZE 1024
 
-void tokenize(string str,vector<string> &varg)
+void parseStrWithComma( string str,vector<string> &varg )
 {
   char minibuff[BUFF_SIZE];
   stringstream args;
@@ -12,7 +12,7 @@ void tokenize(string str,vector<string> &varg)
     varg.push_back((string)minibuff);
 }
 
-void DT::input(string &ifname)
+void DT::input( string &ifname )
 {
   ifstream ifs((ifname+".in").c_str());
 
@@ -23,32 +23,38 @@ void DT::input(string &ifname)
     cout << "open \"" << (ifname+".in") << "\"" << endl;
   }
 
-  char buff[BUFF_SIZE];
+  char line_buff[BUFF_SIZE];
   int  read_state = 0;
 
-  while( ifs.getline( buff,BUFF_SIZE ) ){
-    if( buff[0] == '#' || buff[0] == '\n' || buff[0] == '\r' || buff[0] == '\0') continue;
+  while( ifs.getline( line_buff,BUFF_SIZE ) ){
+    if( line_buff[0] == '#'  || line_buff[0] == '\n' ||
+	line_buff[0] == '\r' || line_buff[0] == '\0')
+      continue;
 
-    if(      (string)buff == "$begin_params"   ) read_state = 1;
-    else if( (string)buff == "$begin_node"     ) read_state = 2;
-    else if( (string)buff == "$begin_edge"     ) read_state = 3;
-    else if( (string)buff == "$begin_boundary" ) read_state = 4;
+    // 入力情報の種類選別
+    if(      (string)line_buff == "$begin_params"   ) read_state = 1;
+    else if( (string)line_buff == "$begin_node"     ) read_state = 2;
+    else if( (string)line_buff == "$begin_edge"     ) read_state = 3;
+    else if( (string)line_buff == "$begin_boundary" ) read_state = 4;
 
     if( read_state == 0 ) continue;
 
-    while( ifs.getline(buff,BUFF_SIZE) ){
-      if( buff[0] == '#' || buff[0] == '\n' || buff[0] == '\r' || buff[0] == '\0') continue;
+    // 入力情報の種類毎での情報の取得
+    while( ifs.getline(line_buff,BUFF_SIZE) ){
+      if( line_buff[0] == '#' ||  line_buff[0] == '\n' ||
+	  line_buff[0] == '\r' || line_buff[0] == '\0')
+	continue;
 
       stringstream     ss;
       vector< string > vs;
       char             minibuff[BUFF_SIZE];
 
-      ss << (string) buff;
+      ss << (string) line_buff;
       while( ss.getline(minibuff,BUFF_SIZE,' '))
         if( minibuff[0] != '\0')
           vs.push_back( (string) minibuff );
 
-      if( ( (string) buff ).substr(0,4) == "$end") break;
+      if( ( (string) line_buff ).substr(0,4) == "$end") break;
 
       vector< string > varg; // デリミタ','による分割結果を格納する変数
       list<Node*>      p;    // 新規ノード
@@ -57,7 +63,7 @@ void DT::input(string &ifname)
 
       switch( read_state ){
       case 1: 
-        // 事前に必要なパラメータの入力
+        // 事前に必要なパラメータ情報の入力
 	if(vs[0] == "$form"){
 	  form = atoi( vs[1].c_str() );
 	  if(vs.size() > 2 && vs[2] == "-obl")
@@ -69,6 +75,7 @@ void DT::input(string &ifname)
         break;
 
       case 2:
+	// ノード情報の入力
         node.push_back( new Node(scale * atof(vs[1].c_str()),
 				 scale * atof(vs[2].c_str()),
 				 atoi( vs[0].c_str()) ) );
@@ -77,19 +84,21 @@ void DT::input(string &ifname)
         break;
 
       case 3:
+	// 辺情報の入力
 	// 線の種類
         if(vs[3] == "$str"){
           edge.push_back( new StraightEdge( node[atoi(vs[1].c_str())-1],
 				   node[atoi(vs[2].c_str())-1] ) );
 
 	}else if(vs[3] == "$cir"){
-          tokenize( vs[4],varg );
+          parseStrWithComma( vs[4],varg );
           edge.push_back( new CircleEdge( node[atoi(vs[1].c_str())-1],
-				   node[atoi(vs[2].c_str())-1], 
-				   scale * atof(varg[1].c_str()),
-				   scale * atof(varg[2].c_str()),
-				   atof(varg[3].c_str())));
+					  node[atoi(vs[2].c_str())-1], 
+					  scale * atof(varg[1].c_str()),
+					  scale * atof(varg[2].c_str()),
+					  atof(varg[3].c_str())          ));
         }
+	
 	// 境界条件
         if(vs[5] == "$dirichlet"){
           edge[edge.size()-1]->bc  = 1;
@@ -106,7 +115,8 @@ void DT::input(string &ifname)
         break;
 	
       case 4:
-        tokenize( vs[1],varg );
+	// 境界情報の入力
+        parseStrWithComma( vs[1],varg );
 
 	for(unsigned int i=0; i<varg.size(); i++){
           p.push_back( node[ atoi(varg[i].c_str())-1 ] );
@@ -116,7 +126,7 @@ void DT::input(string &ifname)
         }
 	
         newb = new Boundary(p,vs[2]=="$true");
-        tokenize(vs[3],varg);
+        parseStrWithComma(vs[3],varg);
         for(unsigned int i=0; i<varg.size(); i++){
           newb->inc_id.push_back( atoi(varg[i].c_str())-1 );
         }
@@ -526,9 +536,10 @@ void DT::output_quad2(string){
 
 void DT::output(string &ofname)
 {
+  // 要素形状別の要素，節点の出力
   switch(form){
-  case 1: output_tri1(ofname); break;
-  case 2: output_tri2(ofname); break;
+  case 1: output_tri1(ofname);  break;
+  case 2: output_tri2(ofname);  break;
   case 3: output_quad1(ofname); break;
   case 4: output_quad2(ofname); break;
   }
