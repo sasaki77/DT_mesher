@@ -11,3 +11,4 @@ all:
 clean:
 	cd $(WORK_DIR)/mesher; make clean;
 	cd $(WORK_DIR)/meshvis; make clean;
+	$(RM) $(BIN_DIR)/mesh $(BIN_DIR)/meshvis
