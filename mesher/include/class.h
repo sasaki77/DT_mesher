@@ -1,5 +1,5 @@
 //==================================================
-//@ƒNƒ‰ƒX
+//ã€€ã‚¯ãƒ©ã‚¹
 //==================================================
 
 #ifndef CLASS_H
@@ -7,7 +7,7 @@
 
 #include "common.h"
 
-//========== ƒNƒ‰ƒXéŒ¾ =========
+//========== ã‚¯ãƒ©ã‚¹å®£è¨€ =========
 class Point;
 class Index;
 class Node;
@@ -18,12 +18,12 @@ class CircleEdge;
 class Tri;
 class Boundary;
 class DT;
-class Quad; //lŠpŒ`—p
+class Quad; //å››è§’å½¢ç”¨
 //===============================
 
 double dist(Point*,Point*);
 
-//========== ƒNƒ‰ƒX’è‹` ==========
+//========== ã‚¯ãƒ©ã‚¹å®šç¾© ==========
 
 class Point{
 public:
@@ -59,7 +59,7 @@ public:
 
   vector< Index > id;
   vector< Tri* >  tsp;
-  vector< Quad* > share_quad; //ƒm[ƒh‚ğ‹¤—L‚·‚élŠpŒ`—v‘f‚Ö‚Ìƒ|ƒCƒ“ƒ^
+  vector< Quad* > share_quad; //ãƒãƒ¼ãƒ‰ã‚’å…±æœ‰ã™ã‚‹å››è§’å½¢è¦ç´ ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 
  Node():Point(){
     isOnBnd  = false;
@@ -77,9 +77,9 @@ public:
   bool operator==( const Node& obj ){ return ( number == obj.number ); }
   bool operator!=( const Node& obj ){ return ( number != obj.number ); }
 
-  virtual void dummy_func(){}; // ÀsŒ^î•ñ‚ğ—LŒø‚É‚·‚é‚½‚ß‚Ì‰¼‘zŠÖ”
+  virtual void dummy_func(){}; // å®Ÿè¡Œæ™‚å‹æƒ…å ±ã‚’æœ‰åŠ¹ã«ã™ã‚‹ãŸã‚ã®ä»®æƒ³é–¢æ•°
 
-  //====lŠpŒ`—v‘f‚Ì‚½‚ß‚ÌŠÖ”====
+  //====å››è§’å½¢è¦ç´ ã®ãŸã‚ã®é–¢æ•°====
   void set_num(int _number){
     number = _number;
   }
@@ -163,7 +163,7 @@ public:
     double dy = fabs(center.y - p[0]->y);
     baseRad = atan2(p[0]->y-center.y,p[0]->x-center.x);
     r = sqrt(dx*dx+dy*dy);
-    // ƒGƒ‰[ƒ`ƒFƒbƒN Ši”[î•ñ‚É–µ‚‚ª‚È‚¢‚©ŒŸ¸
+    // ã‚¨ãƒ©ãƒ¼ãƒã‚§ãƒƒã‚¯ æ ¼ç´æƒ…å ±ã«çŸ›ç›¾ãŒãªã„ã‹æ¤œæŸ»
     /*
     if( !EQDBL_CIR(center.x+r*cos(baseRad-rad),p[1]->x)
       || !EQDBL_CIR(center.y+r*sin(baseRad-rad),p[1]->y) ){
@@ -217,7 +217,7 @@ public:
   
   void calcParms()
   {
-    // —]Œ·’è—‚É‚æ‚è“àŠp‚ğŒvZ
+    // ä½™å¼¦å®šç†ã«ã‚ˆã‚Šå†…è§’ã‚’è¨ˆç®—
     double       theta[3];
     StraightEdge e[3];
     double       max,a,b,c;
@@ -238,7 +238,7 @@ public:
         max = theta[i];
     obl = max;
 
-    // ŠOÏ‚É‚æ‚è–ÊÏ‚ğŒvZ
+    // å¤–ç©ã«ã‚ˆã‚Šé¢ç©ã‚’è¨ˆç®—
     Point A,B;
     A.set( p[2]->x - p[0]->x,p[2]->y - p[0]->y );
     B.set( p[1]->x - p[0]->x,p[1]->y - p[0]->y );
@@ -257,7 +257,7 @@ public:
     nei[2] = t2;
   }
 
-  //====lŠpŒ`—v‘f•ªŠ„‚Ì‚½‚ß‚ÌŠÖ”(cf.quad_model.cpp)====
+  //====å››è§’å½¢è¦ç´ åˆ†å‰²ã®ãŸã‚ã®é–¢æ•°(cf.quad_model.cpp)====
   double       getArea();
   StraightEdge getLongestEdge();
   StraightEdge getMiddleEdge();
@@ -294,15 +294,15 @@ public:
 class DT{
  private:
   double maxx, maxy, minx, miny, square; //for denormalize
-  int    firstNodenum; // “ü—Íƒm[ƒh”
-  double interval; //lŠpŒ`—v‘f•ªŠ„—p‚ÌŠiq“_ŠÔŠu
+  int    firstNodenum; // å…¥åŠ›ãƒãƒ¼ãƒ‰æ•°
+  double interval; //å››è§’å½¢è¦ç´ åˆ†å‰²ç”¨ã®æ ¼å­ç‚¹é–“éš”
   
  public:
 
   string ifname;
   string ofname;
   int    form;
-  bool   useOblDivide; // lŠpŒ`—v‘f•ªŠ„‚ÌÛ‚É•Î•½—¦•ªŠ„‚ğ‚·‚é‚©”Û‚©
+  bool   useOblDivide; // å››è§’å½¢è¦ç´ åˆ†å‰²ã®éš›ã«åå¹³ç‡åˆ†å‰²ã‚’ã™ã‚‹ã‹å¦ã‹
 
   vector< Node* >     node;
   vector< Tri*  >     tri;
@@ -434,7 +434,7 @@ class DT{
     return a.size();
   }
 
-  //---lŠpŒ`•ªŠ„‚Ì‚½‚ß‚ÌŠÖ”-----
+  //---å››è§’å½¢åˆ†å‰²ã®ãŸã‚ã®é–¢æ•°-----
   void cirEdgeDivide(double);
   void generateFineMesh_quad();
   void TriToQuad();

@@ -31,7 +31,7 @@ void DT::input( string &ifname )
 	line_buff[0] == '\r' || line_buff[0] == '\0')
       continue;
 
-    // “ü—Íî•ñ‚Ìí—Ş‘I•Ê
+    // å…¥åŠ›æƒ…å ±ã®ç¨®é¡é¸åˆ¥
     if(      (string)line_buff == "$begin_params"   ) read_state = 1;
     else if( (string)line_buff == "$begin_node"     ) read_state = 2;
     else if( (string)line_buff == "$begin_edge"     ) read_state = 3;
@@ -39,7 +39,7 @@ void DT::input( string &ifname )
 
     if( read_state == 0 ) continue;
 
-    // “ü—Íî•ñ‚Ìí—Ş–ˆ‚Å‚Ìî•ñ‚Ìæ“¾
+    // å…¥åŠ›æƒ…å ±ã®ç¨®é¡æ¯ã§ã®æƒ…å ±ã®å–å¾—
     while( ifs.getline(line_buff,BUFF_SIZE) ){
       if( line_buff[0] == '#' ||  line_buff[0] == '\n' ||
 	  line_buff[0] == '\r' || line_buff[0] == '\0')
@@ -56,18 +56,18 @@ void DT::input( string &ifname )
 
       if( ( (string) line_buff ).substr(0,4) == "$end") break;
 
-      vector< string > varg; // ƒfƒŠƒ~ƒ^','‚É‚æ‚é•ªŠ„Œ‹‰Ê‚ğŠi”[‚·‚é•Ï”
-      list<Node*>      p;    // V‹Kƒm[ƒh
-      Boundary        *newb; // V‹K‹«ŠE
+      vector< string > varg; // ãƒ‡ãƒªãƒŸã‚¿','ã«ã‚ˆã‚‹åˆ†å‰²çµæœã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°
+      list<Node*>      p;    // æ–°è¦ãƒãƒ¼ãƒ‰
+      Boundary        *newb; // æ–°è¦å¢ƒç•Œ
       static double    scale = 1;
 
       switch( read_state ){
       case 1: 
-        // –‘O‚É•K—v‚Èƒpƒ‰ƒ[ƒ^î•ñ‚Ì“ü—Í
+        // äº‹å‰ã«å¿…è¦ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æƒ…å ±ã®å…¥åŠ›
 	if(vs[0] == "$form"){
 	  form = atoi( vs[1].c_str() );
 	  if(vs.size() > 2 && vs[2] == "-obl")
-	    // •Î•½—¦•ªŠ„‚ªw’è‚³‚ê‚Ä‚¢‚éê‡
+	    // åå¹³ç‡åˆ†å‰²ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆ
 	    useOblDivide = true;
 	}
 	if(vs[0] == "$scale")    scale    = atof( vs[1].c_str() );
@@ -75,7 +75,7 @@ void DT::input( string &ifname )
         break;
 
       case 2:
-	// ƒm[ƒhî•ñ‚Ì“ü—Í
+	// ãƒãƒ¼ãƒ‰æƒ…å ±ã®å…¥åŠ›
         node.push_back( new Node(scale * atof(vs[1].c_str()),
 				 scale * atof(vs[2].c_str()),
 				 atoi( vs[0].c_str()) ) );
@@ -84,8 +84,8 @@ void DT::input( string &ifname )
         break;
 
       case 3:
-	// •Óî•ñ‚Ì“ü—Í
-	// ü‚Ìí—Ş
+	// è¾ºæƒ…å ±ã®å…¥åŠ›
+	// ç·šã®ç¨®é¡
         if(vs[3] == "$str"){
           edge.push_back( new StraightEdge( node[atoi(vs[1].c_str())-1],
 				   node[atoi(vs[2].c_str())-1] ) );
@@ -99,7 +99,7 @@ void DT::input( string &ifname )
 					  atof(varg[3].c_str())          ));
         }
 	
-	// ‹«ŠEğŒ
+	// å¢ƒç•Œæ¡ä»¶
         if(vs[5] == "$dirichlet"){
           edge[edge.size()-1]->bc  = 1;
           edge[edge.size()-1]->val = atof(vs[6].c_str());
@@ -108,19 +108,19 @@ void DT::input( string &ifname )
           edge[edge.size()-1]->val = 0;
         }
 	
-	// •\–Ê‚ÌŞ—¿
+	// è¡¨é¢ã®ææ–™
 	if(vs[7] == "$Cu" || vs[7] == "$none"){
 	  edge[edge.size()-1]->material = vs[7].c_str();
 	}
         break;
 	
       case 4:
-	// ‹«ŠEî•ñ‚Ì“ü—Í
+	// å¢ƒç•Œæƒ…å ±ã®å…¥åŠ›
         parseStrWithComma( vs[1],varg );
 
 	for(unsigned int i=0; i<varg.size(); i++){
           p.push_back( node[ atoi(varg[i].c_str())-1 ] );
-          // ƒm[ƒh‚Æ‹«ŠE‡˜‚Ìİ’è
+          // ãƒãƒ¼ãƒ‰ã¨å¢ƒç•Œé †åºã®è¨­å®š
           Index id(bnd.size(),i);
           node[ atoi(varg[i].c_str())-1 ]->id.push_back(id);
         }
@@ -145,7 +145,7 @@ void DT::memo()
   for(unsigned int i=0;i<tri.size();i++)
     if( tri[i]->canExist ) trioutputnum++;
   ofstream ofs("precision.txt", std::ios::out | std::ios::app);
-  ofs << node.size()-3 << '\t' << trioutputnum << '\t' // -3 ‚Í‰¼‘zOŠpŒ`‚Ìß“_”‚ğl—¶
+  ofs << node.size()-3 << '\t' << trioutputnum << '\t' // -3 ã¯ä»®æƒ³ä¸‰è§’å½¢ã®ç¯€ç‚¹æ•°ã‚’è€ƒæ…®
       << getAveragedLength() << '\t' << getAveragedArea() 
       << '\t' << getAveragedObl() << '\t' << getWorstObl() << '\t' 
       << getNodenumOnCir() << '\t' ;
@@ -153,7 +153,7 @@ void DT::memo()
 
 void DT::output_tri1(string ofname)
 {
-  // ß“_—v‘fŠÖŒWƒtƒ@ƒCƒ‹
+  // ç¯€ç‚¹è¦ç´ é–¢ä¿‚ãƒ•ã‚¡ã‚¤ãƒ«
   ofstream ofselem((ofname+".elem").c_str());
 
   ofselem << form << endl;
@@ -195,7 +195,7 @@ void DT::output_tri1(string ofname)
 
   ofstream ofsbc((ofname+".bc").c_str());
   
-  // ‹«ŠEğŒƒtƒ@ƒCƒ‹
+  // å¢ƒç•Œæ¡ä»¶ãƒ•ã‚¡ã‚¤ãƒ«
   ofsbc << "$begin_bc" << endl;
   for( unsigned int i=0; i<edge.size(); i++){
     if( edge[i]->bc != 0 ){
@@ -209,7 +209,7 @@ void DT::output_tri1(string ofname)
       ofsbc << node[i]->number << " " << node[i]->val << endl;
   ofsbc << "$end" << endl << endl;
   
-  // Ş—¿ƒtƒ@ƒCƒ‹
+  // ææ–™ãƒ•ã‚¡ã‚¤ãƒ«
   vector< StraightEdge > surf;
   for(unsigned int i=0; i<edge.size(); i++){
     if( edge[i]->material != "" && edge[i]->material != "$none" ){
@@ -235,7 +235,7 @@ void DT::output_tri2(string ofname)
 {
   vector< Surface > surf;
 
-  // “ñŸ—v‘f‚ÌOŠpŒ`‚ğ¶¬
+  // äºŒæ¬¡è¦ç´ ã®ä¸‰è§’å½¢ã‚’ç”Ÿæˆ
   for( unsigned int i=0; i<tri.size(); i++){
     if(!tri[i]->canExist) continue;
 
@@ -253,7 +253,7 @@ void DT::output_tri2(string ofname)
 	  Point p = edge[k]->divPoint(1,1);
           new_node->set(p.x,p.y);
 
-	  // •\–ÊŞ—¿‚ªw’è‚µ‚Ä‚ ‚éê‡
+	  // è¡¨é¢ææ–™ãŒæŒ‡å®šã—ã¦ã‚ã‚‹å ´åˆ
 	  if( edge[k]->material != "" && edge[k]->material != "$none" ){
 	    Surface s(edge[k]->p[0], new_node, edge[k]->p[1], edge[k]->material);
 	    surf.push_back(s);
@@ -272,7 +272,7 @@ void DT::output_tri2(string ofname)
     }
   }
   
-  // ß“_—v‘fŠÖŒWƒtƒ@ƒCƒ‹
+  // ç¯€ç‚¹è¦ç´ é–¢ä¿‚ãƒ•ã‚¡ã‚¤ãƒ«
   ofstream ofselem((ofname+".elem").c_str());
   ofselem << form << endl;
 
@@ -318,7 +318,7 @@ void DT::output_tri2(string ofname)
 
   cout << " ---\"" << ofname+".elem" << "\" was generated." << endl;
 
-  // ‹«ŠEğŒƒtƒ@ƒCƒ‹
+  // å¢ƒç•Œæ¡ä»¶ãƒ•ã‚¡ã‚¤ãƒ«
   ofstream ofsbc((ofname+".bc").c_str());
   ofsbc << "$begin_bc" << endl;
   
@@ -332,7 +332,7 @@ void DT::output_tri2(string ofname)
     if(node[i]->bc == 1) ofsbc << node[i]->number << " " << node[i]->val << endl;
   ofsbc << "$end" << endl << endl;
 
-  // Ş—¿ƒtƒ@ƒCƒ‹
+  // ææ–™ãƒ•ã‚¡ã‚¤ãƒ«
   ofsbc << "$begin_material" << endl;
   ofsbc << surf.size() << endl;
   for(unsigned int i=0;i<surf.size();i++){
@@ -345,7 +345,7 @@ void DT::output_tri2(string ofname)
 }
 
 void DT::output_quad1(string){ 
-  // ß“_—v‘fŠÖŒWƒtƒ@ƒCƒ‹
+  // ç¯€ç‚¹è¦ç´ é–¢ä¿‚ãƒ•ã‚¡ã‚¤ãƒ«
   ofstream ofselem((ofname+".elem").c_str());
   ofselem << form << endl;
 
@@ -382,7 +382,7 @@ void DT::output_quad1(string){
   }
 
 
-  // ‹«ŠEğŒƒtƒ@ƒCƒ‹
+  // å¢ƒç•Œæ¡ä»¶ãƒ•ã‚¡ã‚¤ãƒ«
   ofstream ofsbc((ofname+".bc").c_str());
   ofsbc << "$begin_bc" << endl;
   for(unsigned int i=0; i<edge.size(); i++){
@@ -395,7 +395,7 @@ void DT::output_quad1(string){
     if(node[i]->bc == 1) ofsbc << node[i]->number << " " << node[i]->val << endl;
   ofsbc << "$end" << endl << endl;
 
-  // Ş—¿ƒtƒ@ƒCƒ‹
+  // ææ–™ãƒ•ã‚¡ã‚¤ãƒ«
   vector< StraightEdge > surf;
   for(unsigned int i=0; i<edge.size(); i++){
     if(edge[i]->material != "" && edge[i]->material != "$none"){
@@ -417,23 +417,23 @@ void DT::output_quad1(string){
 void DT::output_quad2(string){
   vector< Surface > surf;
 
-  // ‚QŸ—v‘f‚ÌlŠpŒ`‚ğ¶¬
+  // ï¼’æ¬¡è¦ç´ ã®å››è§’å½¢ã‚’ç”Ÿæˆ
   for(unsigned int i=0; i<quad.size(); i++){
     for(int j=0; j<4; j++){
-      // ß“_‚ğ’u‚­ˆÊ’u‚ğŒˆ’è
+      // ç¯€ç‚¹ã‚’ç½®ãä½ç½®ã‚’æ±ºå®š
       StraightEdge e(quad[i]->p[j], quad[i]->p[(j+1)%4]);
       Node* new_node = new Node((e.p[0]->x + e.p[1]->x)/2.0,
 				(e.p[0]->y + e.p[1]->y)/2.0,
 				node.size()+1);
       
-      // ‹«ŠE‚Å‡‚Á‚½ê‡’†“_‚ÉˆÚ“®i‰~Œ`‚Å‚Ìˆ—‚Ì‚½‚ßj
+      // å¢ƒç•Œã§åˆã£ãŸå ´åˆä¸­ç‚¹ã«ç§»å‹•ï¼ˆå††å½¢ã§ã®å‡¦ç†ã®ãŸã‚ï¼‰
       for(unsigned int k=0; k<edge.size(); k++){
         if( e == *edge[k]){
           new_node->isOnBnd = true;
           Point p = edge[k]->divPoint(1,1);
           new_node->set(p.x,p.y);
 
-	  // •\–ÊŞ—¿‚ªw’è‚µ‚Ä‚ ‚éê‡
+	  // è¡¨é¢ææ–™ãŒæŒ‡å®šã—ã¦ã‚ã‚‹å ´åˆ
 	  if( edge[k]->material != "" && edge[k]->material != "$none" ){
 	    Surface s(edge[k]->p[0], new_node, edge[k]->p[1], edge[k]->material);
 	    surf.push_back(s);
@@ -443,7 +443,7 @@ void DT::output_quad2(string){
         }
       }
 
-      // “_‚ªd‚È‚Á‚Ä‚¢‚éê‡‚Ìˆ—
+      // ç‚¹ãŒé‡ãªã£ã¦ã„ã‚‹å ´åˆã®å‡¦ç†
       int NodeSetedNum = -1;
       for(int k=0; k < node.size(); k++){
 	if( fabs(new_node->x - node[k]->x) < CALC_EPS &&
@@ -465,7 +465,7 @@ void DT::output_quad2(string){
     }
   }
   
-  // ß“_—v‘fŠÖŒWƒtƒ@ƒCƒ‹
+  // ç¯€ç‚¹è¦ç´ é–¢ä¿‚ãƒ•ã‚¡ã‚¤ãƒ«
   ofstream ofselem((ofname+".elem").c_str());
   ofselem << form << endl;
   int nodenum=0;
@@ -507,7 +507,7 @@ void DT::output_quad2(string){
 
   cout << " ---\"" << ofname+".elem" << "\" was generated." << endl;
 
-  // ‹«ŠEğŒƒtƒ@ƒCƒ‹
+  // å¢ƒç•Œæ¡ä»¶ãƒ•ã‚¡ã‚¤ãƒ«
   ofstream ofsbc((ofname+".bc").c_str());
   ofsbc << "$begin_bc" <<endl;
   for(unsigned int i=0; i<edge.size(); i++){
@@ -520,7 +520,7 @@ void DT::output_quad2(string){
     if(node[i]->bc == 1) ofsbc << node[i]->number << " " << node[i]->val << endl;
   ofsbc << "$end" << endl << endl;
 
-  // Ş—¿ƒtƒ@ƒCƒ‹
+  // ææ–™ãƒ•ã‚¡ã‚¤ãƒ«
   ofsbc << "$begin_material" << endl;
   ofsbc << surf.size() << endl;
   for(unsigned int i=0;i<surf.size();i++){
@@ -536,7 +536,7 @@ void DT::output_quad2(string){
 
 void DT::output(string &ofname)
 {
-  // —v‘fŒ`ó•Ê‚Ì—v‘fCß“_‚Ìo—Í
+  // è¦ç´ å½¢çŠ¶åˆ¥ã®è¦ç´ ï¼Œç¯€ç‚¹ã®å‡ºåŠ›
   switch(form){
   case 1: output_tri1(ofname);  break;
   case 2: output_tri2(ofname);  break;
@@ -544,7 +544,7 @@ void DT::output(string &ofname)
   case 4: output_quad2(ofname); break;
   }
 
-  // femvis‚Ì‚½‚ß‚Ì‹«ŠEŒ`ó‚Ìo—Í
+  // femvisã®ãŸã‚ã®å¢ƒç•Œå½¢çŠ¶ã®å‡ºåŠ›
   ofstream ofsbs((ofname+".bs").c_str());
   ofsbs << firstNodenum << endl;
   ofsbs << edge.size()  << endl;
