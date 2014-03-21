@@ -43,7 +43,7 @@ int main( int argc, char *argv[] )
 
   dt->output(dt->ofname);
 
-  dt->memo();
+  //dt->memo();
 
   string is_seen = "";
 #if DEBUG
