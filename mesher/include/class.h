@@ -5,7 +5,7 @@
 #ifndef CLASS_H
 #define CLASS_H
 
-#include "preprocess.h"
+#include "common.h"
 
 //========== ƒNƒ‰ƒXéŒ¾ =========
 class Point;

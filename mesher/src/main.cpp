@@ -1,6 +1,6 @@
 #define MAIN
 
-#include "preprocess.h"
+#include "common.h"
 
 DT *dt;
 

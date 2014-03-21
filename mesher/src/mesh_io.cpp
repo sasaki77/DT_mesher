@@ -1,4 +1,4 @@
-#include "preprocess.h"
+#include "common.h"
 #define BUFF_SIZE 1024
 
 void tokenize(string str,vector<string> &varg)
