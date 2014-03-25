@@ -1,6 +1,6 @@
 #define MAIN
 
-#include "preprocess.h"
+#include "common.h"
 
 DT *dt;
 
@@ -8,7 +8,7 @@ int main( int argc, char *argv[] )
 {
   cout << "==================== start mesh ====================" << endl;
 
-  dt = new DT();
+  dt       = new DT();
   dt->form = 0;
 
   switch( argc ){
@@ -21,21 +21,22 @@ int main( int argc, char *argv[] )
 
   if(dt->ifname == ""){
     cout << "input objective file name\n>>" ;
-    cin >> dt->ifname;
+    cin  >> dt->ifname;
     dt->ofname = dt->ifname;
   }
   
   dt->input(dt->ifname);
 
+  // 分割要素未選択時に選択を行う
   if( dt->form == 0 ){
     do{
       cout << "choose output format : " << endl;
-      cout << " 1. tri-1" << endl;
-      cout << " 2. tri-2" << endl;
-      cout << " 3. quad-1" << endl;
-      cout << " 4. quad-2" << endl << endl;
+      cout << " 1. tri-1"               << endl;
+      cout << " 2. tri-2"               << endl;
+      cout << " 3. quad-1"              << endl;
+      cout << " 4. quad-2"              << endl << endl;
       cout << ">>" ;
-      cin >> dt->form;
+      cin  >> dt->form;
     }while( dt->form < 1 || dt->form > 4 );    
   }
 
@@ -45,6 +46,7 @@ int main( int argc, char *argv[] )
 
   //dt->memo();
 
+  // 分割した要素のヴィジュアライズ
   string is_seen = "";
 #if DEBUG
   is_seen = "y";
@@ -52,10 +54,10 @@ int main( int argc, char *argv[] )
   cout << "launch visualizer ? (y/n) \n >>" << flush ;
   cin >> is_seen;
 #endif
-  string cmdline;
 
   if(is_seen == "y"){
     //cmdline = "vis.exe " + dt->ofname; // for Windows_NT
+    string cmdline;
     cmdline = "./meshvis " + dt->ofname; // for Unix-like
     
     cout << cmdline << endl;
