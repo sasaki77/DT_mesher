@@ -28,7 +28,7 @@ void display(void)
   glClear(GL_COLOR_BUFFER_BIT);
   
 
-  // OŠpŒ`—v‘forlŠpŒ`—v‘f‚Ì•`‰æ
+  // ä¸‰è§’å½¢è¦ç´ orå››è§’å½¢è¦ç´ ã®æç”»
   glLineWidth(1.0f);
   if(data.form <=2 ) glBegin(GL_TRIANGLES);
   else glBegin(GL_QUADS);
@@ -39,7 +39,7 @@ void display(void)
   }
   glEnd();
 
-  // ‹«ŠE‚Ì•`‰æ
+  // å¢ƒç•Œã®æç”»
   if(data.isDispBoundary){
     glLineWidth(3.0f);
     glBegin(GL_LINES);
@@ -68,7 +68,7 @@ void display(void)
     glEnd();
   }
 
-  // —v‘fŠÔ‚Ì‹«ŠEü‚Ì•`‰æ
+  // è¦ç´ é–“ã®å¢ƒç•Œç·šã®æç”»
   glLineWidth(1.0f);
   glBegin(GL_LINES);
   glColor3d(0.4,0.4,0.4);
@@ -81,7 +81,7 @@ void display(void)
   }    
   glEnd();
 
-  // ƒm[ƒh”Ô†‚Ìo—Í
+  // ãƒãƒ¼ãƒ‰ç•ªå·ã®å‡ºåŠ›
   if(data.isDispNodenum){
     glColor3d(0,0,0);
     for(int i=0;i<data.node.size();i++){
@@ -98,7 +98,7 @@ void init(string fname)
   glClearColor(1.0, 1.0, 1.0, 1.0);
   data.input(fname);
   data.normalize();
-  //OŠpŒ`“ñŸ—v‘f‚Ì•\¦‚É‚¨‚¢‚Äƒm[ƒh”Ô†o—Í‚ÌÛC‰¼‘zOŠpŒ`‚ÌO“_•ª‚ğl—¶‚·‚é
+  //ä¸‰è§’å½¢äºŒæ¬¡è¦ç´ ã®è¡¨ç¤ºã«ãŠã„ã¦ãƒãƒ¼ãƒ‰ç•ªå·å‡ºåŠ›ã®éš›ï¼Œä»®æƒ³ä¸‰è§’å½¢ã®ä¸‰ç‚¹åˆ†ã‚’è€ƒæ…®ã™ã‚‹
   //if(data.form==2)
     //for(int i=0;i<data.node.size();i++)
       //if(data.node[i].id > data.elem[0].p[3]->id) data.node[i].id += 0;
