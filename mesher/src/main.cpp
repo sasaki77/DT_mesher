@@ -44,7 +44,7 @@ int main( int argc, char *argv[] )
 
   dt->output(dt->ofname);
 
-  //dt->memo();
+  dt->memo();
 
   // 分割した要素のヴィジュアライズ
   string is_seen = "";

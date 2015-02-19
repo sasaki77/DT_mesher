@@ -141,14 +141,19 @@ void DT::input( string &ifname )
 
 void DT::memo()
 {
-  int trioutputnum=0;
-  for(unsigned int i=0;i<tri.size();i++)
-    if( tri[i]->canExist ) trioutputnum++;
+  int elemnum=0;
+  if( form == 1 || form == 2 ){
+	  for(unsigned int i=0;i<tri.size();i++)
+		  if( tri[i]->canExist ) elemnum++;
+  } else if( form == 3 || form == 4 ){
+	  elemnum = quad.size();
+  }
+
   ofstream ofs("precision.txt", std::ios::out | std::ios::app);
-  ofs << node.size()-3 << '\t' << trioutputnum << '\t' // -3 は仮想三角形の節点数を考慮
+  ofs << node.size()-3 << '\t' << elemnum << '\t' // -3 は仮想三角形の節点数を考慮
       << getAveragedLength() << '\t' << getAveragedArea() 
       << '\t' << getAveragedObl() << '\t' << getWorstObl() << '\t' 
-      << getNodenumOnCir() << '\t' ;
+      << getNodenumOnCir() << endl;
 }
 
 void DT::output_tri1(string ofname)

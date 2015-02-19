@@ -31,7 +31,7 @@ $begin_params
 # $form のoption
 # -obl 偏平率分割をするoption
 #      (四角形分割の際に格子点分割でなく偏平率分割をしたい場合に使用)
-$form 2
+#$form 2
 
 # $intervalは四角形要素分割の際の格子点間隔を指定
 $interval 0.25

@@ -291,6 +291,79 @@ public:
   }
 };
 
+class Quad{
+ public:
+  Node   *p[4];
+  Node   *p2[4];
+  double area_sum;
+
+  Quad(){
+    p[0] = p[1] = p[2] = p[3] = NULL;
+    area_sum = 0;
+  }
+
+  Quad( Node *p0, Node *p1, Node *p2, Node *p3 ){
+    p[0] = p0;
+    p[1] = p1;
+    p[2] = p2;
+    p[3] = p3;
+  }
+  
+  void set( Node *p0, Node *p1, Node *p2, Node *p3 ){
+    p[0] = p0;
+    p[1] = p1;
+    p[2] = p2;
+    p[3] = p3;
+  }
+
+  Point getCenterPoint(){
+    double x,y;
+    Tri    divtri[2];
+    double sum_tri[2],sum_all;
+
+    divtri[0].set(p[0],p[1],p[2]);
+    divtri[1].set(p[2],p[3],p[0]);
+
+    sum_tri[0] = divtri[0].getArea();
+    sum_tri[1] = divtri[1].getArea();
+    sum_all    = sum_tri[0] + sum_tri[1];
+
+    Point pointc_tri[2];
+    pointc_tri[0] = divtri[0].getCenterPoint();
+    pointc_tri[1] = divtri[1].getCenterPoint();
+
+    x = ( sum_tri[0] * pointc_tri[0].x + sum_tri[1] * pointc_tri[1].x) / (sum_all);
+    y = ( sum_tri[0] * pointc_tri[0].y + sum_tri[1] * pointc_tri[1].y) / (sum_all);
+
+    Point pointc(x,y);
+
+    return pointc;
+  }
+
+  double getArea(){
+    Point vnode[4];
+    double sum;
+    vnode[0].set( p[0]->x - p[1]->x ,p[0]->y - p[1]->y );
+    vnode[1].set( p[2]->x - p[1]->x ,p[2]->y - p[1]->y );
+    vnode[2].set( p[3]->x - p[2]->x ,p[3]->y - p[2]->y );
+    vnode[3].set( p[1]->x - p[2]->x ,p[1]->y - p[2]->y );
+
+    sum = fabs((vnode[0].x * vnode[1].y - vnode[0].y * vnode[1].x)) /2 +
+          fabs((vnode[2].x * vnode[3].y - vnode[2].y * vnode[3].x)) /2; 
+
+    return sum;
+  }
+
+  bool operator==( const Quad& obj ){
+    return ( p[0] == obj.p[0] && p[1] == obj.p[1] &&
+	     p[2] == obj.p[2] && p[3] == obj.p[3] );
+  }
+  bool operator!=( const Quad& obj ){
+    return !( p[0] == obj.p[0] && p[1] == obj.p[1] &&
+	      p[2] == obj.p[2] && p[3] == obj.p[3]);
+  }
+};
+
 class DT{
  private:
   double maxx, maxy, minx, miny, square; //for denormalize
@@ -387,12 +460,20 @@ class DT{
     double sum = 0;
     int    cnt = 0;
 
-    for(unsigned int i=0; i<tri.size(); i++){
-      if(!tri[i]->canExist) continue;
-      cnt++;
-      tri[i]->calcParms();
-      sum += tri[i]->area;
-    }
+	if( form == 1 || form == 2){
+		for(unsigned int i=0; i<tri.size(); i++){
+			if(!tri[i]->canExist) continue;
+			cnt++;
+			tri[i]->calcParms();
+			sum += tri[i]->area;
+		}
+	}else if( form == 3 || form == 4){
+		for(unsigned int i=0; i<quad.size(); i++){
+			cnt++;
+			sum += quad[i]->getArea();
+		}
+	}
+
     
     sum /= (double)cnt;
     return sum;
@@ -403,13 +484,23 @@ class DT{
     double sum = 0;
     int    cnt = 0;
 
-    for(unsigned int i=0; i<tri.size(); i++){
-      if( !tri[i]->canExist ) continue;
-      cnt++;
-      sum += ( dist( tri[i]->p[0], tri[i]->p[1] )
-	     + dist( tri[i]->p[1], tri[i]->p[2] )
-	     + dist( tri[i]->p[2], tri[i]->p[0] ) ) / 3;
-    }
+	if( form == 1 || form == 2){
+		for(unsigned int i=0; i<tri.size(); i++){
+			if( !tri[i]->canExist ) continue;
+			cnt++;
+			sum += ( dist( tri[i]->p[0], tri[i]->p[1] )
+					+ dist( tri[i]->p[1], tri[i]->p[2] )
+					+ dist( tri[i]->p[2], tri[i]->p[0] ) ) / 3;
+		}
+	}else if( form == 3 || form == 4 ){
+		for(unsigned int i=0; i<quad.size(); i++){
+			cnt++;
+			sum += ( dist( quad[i]->p[0], quad[i]->p[1] )
+					+ dist( quad[i]->p[1], quad[i]->p[2] )
+					+ dist( quad[i]->p[2], quad[i]->p[3] )
+					+ dist( quad[i]->p[3], quad[i]->p[0] ) ) / 4;
+		}
+	}
     
     sum /= (double)cnt;
     return sum;
@@ -452,77 +543,5 @@ class DT{
   void generateBnd_Quad();
 };
 
-class Quad{
- public:
-  Node   *p[4];
-  Node   *p2[4];
-  double area_sum;
-
-  Quad(){
-    p[0] = p[1] = p[2] = p[3] = NULL;
-    area_sum = 0;
-  }
-
-  Quad( Node *p0, Node *p1, Node *p2, Node *p3 ){
-    p[0] = p0;
-    p[1] = p1;
-    p[2] = p2;
-    p[3] = p3;
-  }
-  
-  void set( Node *p0, Node *p1, Node *p2, Node *p3 ){
-    p[0] = p0;
-    p[1] = p1;
-    p[2] = p2;
-    p[3] = p3;
-  }
-
-  Point getCenterPoint(){
-    double x,y;
-    Tri    divtri[2];
-    double sum_tri[2],sum_all;
-
-    divtri[0].set(p[0],p[1],p[2]);
-    divtri[1].set(p[2],p[3],p[0]);
-
-    sum_tri[0] = divtri[0].getArea();
-    sum_tri[1] = divtri[1].getArea();
-    sum_all    = sum_tri[0] + sum_tri[1];
-
-    Point pointc_tri[2];
-    pointc_tri[0] = divtri[0].getCenterPoint();
-    pointc_tri[1] = divtri[1].getCenterPoint();
-
-    x = ( sum_tri[0] * pointc_tri[0].x + sum_tri[1] * pointc_tri[1].x) / (sum_all);
-    y = ( sum_tri[0] * pointc_tri[0].y + sum_tri[1] * pointc_tri[1].y) / (sum_all);
-
-    Point pointc(x,y);
-
-    return pointc;
-  }
-
-  double getArea(){
-    Point vnode[4];
-    double sum;
-    vnode[0].set( p[0]->x - p[1]->x ,p[0]->y - p[1]->y );
-    vnode[1].set( p[2]->x - p[1]->x ,p[2]->y - p[1]->y );
-    vnode[2].set( p[3]->x - p[2]->x ,p[3]->y - p[2]->y );
-    vnode[3].set( p[1]->x - p[2]->x ,p[1]->y - p[2]->y );
-
-    sum = fabs((vnode[0].x * vnode[1].y - vnode[0].y * vnode[1].x)) /2 +
-          fabs((vnode[2].x * vnode[3].y - vnode[2].y * vnode[3].x)) /2; 
-
-    return sum;
-  }
-
-  bool operator==( const Quad& obj ){
-    return ( p[0] == obj.p[0] && p[1] == obj.p[1] &&
-	     p[2] == obj.p[2] && p[3] == obj.p[3] );
-  }
-  bool operator!=( const Quad& obj ){
-    return !( p[0] == obj.p[0] && p[1] == obj.p[1] &&
-	      p[2] == obj.p[2] && p[3] == obj.p[3]);
-  }
-};
 
 #endif // CLASS_H
